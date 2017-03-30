@@ -1,4 +1,4 @@
-#TacPoint Take-Home
+# TacPoint Take-Home
 
 ## Synopsis
 
@@ -31,15 +31,30 @@ Extra Credit
 
 ## UI Screenshot
 
-ScreenShot Description
+MineSweeper
 
-![UI](http://i.imgur.com/CHANGE-ME.jpg)
+<img src='http://i.imgur.com/cmtdmGe.jpg' width=700px>
+
+MineSweeper In Play
+
+<img src='http://i.imgur.com/EQcF5nL.png' width=500px>
+
+MineSweeper Win State
+
+<img src='http://i.imgur.com/jKQfykR.png' width=500px>
+
+MineSweeper Mobile
+
+<img src='http://i.imgur.com/Y16j4bj.png' width=250px>
 
 
 ## Features
 
-- 
+- Allow User to Customize Game Board Size and Difficulty
 
 ## Future Work
 
-- 
+- Have High Score Data Persist
+- Refactor Code: Clean Up, More Reuse, Implement Better Front End Framework(?)
+- Better Responsiveness for different Desktop Views
+- Different Themes for Difficulty Levels (Easy - Meadow, Intermediate - Dungeon, Hard - Boss Fight)
