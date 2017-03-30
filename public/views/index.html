@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>💣 Minesweeper 💣</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'>
+
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' integrity='sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u' crossorigin='anonymous'>
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+  <link rel='stylesheet' type='text/css' href='assets/stylesheets/style.css'>
+  
+  <script src='https://code.jquery.com/jquery-3.1.1.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js' integrity='sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa' crossorigin='anonymous'></script>
+  <script src='assets/scripts/app.js'></script>
+
+</head>
+<body>
+
+  <div id='desktop'>
+    <h2 id='minesweeper' class='text-center'><img src='assets/images/bomb.png'> Minesweeper <img src='assets/images/bomb.png'></h2>
+    <div class='container'>
+
+      <div class='col-md-8 col-md-offset-2 text-center'>
+        <div class='row'>
+          <div id='header'>
+            
+          </div>
+        </div>
+        <div class='row'>
+          <div id='game-board'>
+            <div class='options'>
+              <a href='#' data-toggle='modal' data-target='#custom-modal' 
+              class='btn btn-default'>Options</a>
+            </div>
+            <div class='about'>
+              <a href='#' data-toggle='modal' data-target='#about-modal' 
+                class='btn btn-default'>About</a>
+            </div>
+            <div class='game-header'>
+              <p>
+                <button class='btn btn-default link' id='reset'></button>
+              </p>
+              <p>
+                <span id='bomb-span'>Bombs Left: <span id='bombs'></span></span>
+                <span id='game-message' hidden></span>
+              </p>
+            </div>
+            <div id='v-align'>
+              <div id='wrapper'>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- END DESKTOP -->
+
+  <div id='mobile'>
+    <div class='options'>
+      <a href='#' data-toggle='modal' data-target='#custom-modal' 
+      class='btn btn-default'>Options</a>
+    </div>
+    <div class='about'>
+      <a href='#' data-toggle='modal' data-target='#about-modal' 
+        class='btn btn-default'>About</a>
+    </div>
+    <div class='game-header'>
+      <p>
+        <button class='btn btn-default link' id='mobile-reset'></button>
+      </p>
+      <p>
+        <span id='bomb-span'>Bombs Left: <span id='bombs'></span></span>
+        <span id='game-message' hidden></span>
+      </p>
+    </div>
+    <div id='mobile-v-align'>
+      <div id='mobile-wrapper'>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM SIZE MODAL -->
+  <div class='modal fade' id='custom-modal' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>
+    <div class='modal-dialog' role='document'>
+      <div class='modal-content'>
+        <div class='modal-header'>
+          <span class='modal-title' id='custom-header'>Customize Your Board</span>
+          <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+            <span aria-hidden='true'>&times;</span>
+          </button>
+        </div>
+        <form>
+        <div class='modal-body'>
+          <div class='input-field form-group'>
+            <label for='Height'>Height</label>
+            <input id='height' class='form-control' name='height' value='12' required>
+          </div>
+          <div class='input-field form-group'>
+            <label for='Width'>Width</label>
+            <input id='width' class='form-control' name='width' value='12' required>
+          </div>
+          <div class='input-field form-group'>
+              <label for='Difficulty'>Difficulty</label>
+              <select class='form-control' id='difficulty'>
+                <option value='0'>Easy (5% bombs)</option>
+                <option value='1'>Medium (25% bombs)</option>
+                <option value='2'>Hard (50% bombs)</option>
+              </select>
+            </div>
+        </div>
+        <div class='modal-footer'>
+          <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+          <button class='btn btn-primary' id='create'>Create</button>
+        </div>
+        </form> 
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT MODAL -->
+  <div class='modal fade' id='about-modal' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>
+    <div class='modal-dialog' role='document'>
+      <div class='modal-content'>
+        <div class='modal-header'>
+          <span class='modal-title' id='about-header'>About Minesweeper</span>
+          <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+            <span aria-hidden='true'>&times;</span>
+          </button>
+        </div>
+        <div class='modal-body'>
+          <p>
+            <i>Left-Click any square.</i> This will reveal:
+            <ol>
+              <li>If it is a bomb, or</li>
+              <li>If there are surrounding Mines near, or</li>
+              <li>Other surrounding Mine Counters.</li>
+            </ol>
+          </p>
+          <p>
+            <i>Check the numbers to find bombs.</i> As you uncover tiles, you will see numbers revealed. A number means that there are that number of bombs touching that tile (both sides, top/bottom, and diagonally). If you see a 1 on the board, it means that square is touching exactly 1 Mine.
+          </p>
+          <p>
+            <i>Click known safe squares.</i> Eliminate squares that can't possibly contain mines by left clicking. Say you found a 1, and you're pretty sure where the mine for that 1 is. You can click all the other squares around that 1 to open them, because the 1 can only be in contact with a single mine.
+          </p>
+          <p>
+            <i>Right-click to identify mines.</i> When you're reasonably certain you've found a mine, identify it by right-clicking or holding alt and clicking on the square. This will put a flag on the mine, and prevent you from clicking on it.
+          </p>
+          <p>
+            <strong>Winning the Game</strong><br>
+            You will win the game if you Flag all the Mines.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME OVER MODAL -->
+  <div class='modal fade' id='game-over-modal' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>
+    <div class='modal-dialog' role='document'>
+      <div class='modal-content'>
+        <div class='modal-body text-center'>
+          <p>
+            <span class='modal-title' id='about-header'>Game Over</span>
+          </p>
+          <p id='game-over-image'>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "lbrown",
+  "version": "1.0.0",
+  "description": "The Practical Part ================== Hi Lily, it was a pleasure meeting you yesterday! This will be the last part of the interview (we promise)!",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://Lily-Brown@gitlab.com/tacpoint-interviews/lbrown.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/tacpoint-interviews/lbrown/issues"
+  },
+  "homepage": "https://gitlab.com/tacpoint-interviews/lbrown#README",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}

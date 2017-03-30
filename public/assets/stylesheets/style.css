@@ -1,0 +1,225 @@
+
+body {
+  position: relative;
+  background-image: url('/assets/images/zeldabg.jpg');
+  background-size: cover;
+}
+
+#mobile {
+  display:none;
+}
+
+#header {
+  margin: 20px;
+}
+
+#minesweeper, .modal-title {
+  font-family: 'Press Start 2P', cursive;
+}
+
+#minesweeper {
+  border: 5px solid #283F26;
+  border-radius: 5px;
+  background-color: #A2DFAA;
+  width: 570px;
+  margin: 10px auto;
+  margin-top: 20px;
+}
+
+#minesweeper img {
+  height: 50px;
+  width: 50px;
+}
+
+#game-board {
+  width: 600px;
+  height: 560px;
+  margin: 0 auto;
+  padding: 10px 0 40px 0;
+  position: relative;
+  background-image: url('/assets/images/game-board.png');
+  background-size: stretch;
+  background-repeat: no-repeat;
+}
+
+#v-align {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  margin-top: 50px;
+}
+
+.options {
+  position: absolute;
+  left: 70px;
+  top: 80px;
+}
+
+.about {
+  position: absolute;
+  right: 70px;
+  top: 80px;
+}
+
+#wrapper {
+  border: 1px solid #CCCCCC;
+  border-radius: 2px;
+  line-height: 1px;
+  display: inline-block;
+}
+
+.game-header {
+  position: absolute;
+  top: 80px;
+  left: 250px;
+}
+
+#reset, #mobile-reset{
+  width: 35px;
+  height: 35px;
+  background-size: contain;
+}
+
+#reset:active, #mobile-reset:active {
+  background-image: url('/assets/images/zelda.png');
+}
+
+.link {
+  background-image: url('/assets/images/link.png');
+}
+
+.potion {
+  background-image: url('/assets/images/potion.png');
+}
+
+.headbox {
+  width: 100%;
+  display: inline-block;
+}
+
+.box {
+  border: 1px solid #ADADAD;
+  border-radius: 2px;
+  height: 20px;
+  width: 20px;
+  display: inline-block;
+  background-size: contain;
+  background-color: #BBC1C3;
+}
+
+
+.border {
+  background-image: url('/assets/images/border2.png');
+  background-size: cover;
+}
+
+.flag {
+  background-image: url('/assets/images/flag.png');
+}
+
+.one {
+  background-image: url('/assets/images/1.png');
+}
+
+.two {
+  background-image: url('/assets/images/2.png');
+}
+
+.three {
+  background-image: url('/assets/images/3.png');
+}
+
+.four {
+  background-image: url('/assets/images/4.png');
+}
+
+.five {
+  background-image: url('/assets/images/5.png');
+}
+
+.six {
+  background-image: url('/assets/images/6.png');
+}
+
+.seven {
+  background-image: url('/assets/images/7.png');
+}
+
+.bomb {
+  background-image: url('/assets/images/mine.png');
+}
+
+#game-over-image {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+  background-size: cover;
+}
+
+.link-lost {
+  background-image: url('/assets/images/you-lost.png');
+}
+
+.link-won {
+  background-image: url('/assets/images/you-won.png');
+}
+
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: portrait) {
+
+  body {
+    display: inline-block;
+    background-image: url('/assets/images/mobile-bg.png');
+    background-size: cover;
+    background-color: #4b964c;
+    background-repeat: no-repeat;
+  }
+
+  #mobile {
+    display: inline-block;
+    position: relative;
+    height: 375px;
+    width: 375px;
+    margin-top: 20vh;
+  }
+
+  #desktop {
+    display:none;
+  }
+
+  #mobile-v-align {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    margin-top: 70px;
+  }
+
+  #mobile-wrapper {
+    border: 1px solid #CCCCCC;
+    border-radius: 2px;
+    line-height: 1px;
+    display: inline-block;
+  }
+
+  .options {
+    position: absolute;
+    left: 45px;
+    top: 25px;
+  }
+
+  .about {
+    position: absolute;
+    right: 45px;
+    top: 25px;
+  }
+
+  .game-header {
+    position: absolute;
+    top: 25px;
+    left: 150px;
+    text-align: center;
+  }
+}
