@@ -5,6 +5,12 @@ body {
   background-size: cover;
 }
 
+a {
+  color: #516AA6;
+  background-color: #A2DFAA;
+  border-radius: 5px;
+}
+
 #mobile {
   display:none;
 }
@@ -221,5 +227,11 @@ body {
     top: 25px;
     left: 150px;
     text-align: center;
+  }
+
+  .credit {
+    position: absolute;
+    bottom: -150px;
+    left: 20px;
   }
 }
