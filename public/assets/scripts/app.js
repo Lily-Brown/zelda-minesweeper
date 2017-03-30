@@ -3,11 +3,8 @@ console.log('Assets connected.');
 $(document).ready(function() {
   var isMobile = window.matchMedia("only screen and (max-width: 760px)");
 
-  function startGame(event,height,width,difficulty) {
-    game = new Game();
-    game.height = height;
-    game.width = width;
-    game.difficulty = difficulty;
+  function startGame(event,height,width,difficulty,highScores) {
+    game = new Game(height,width,difficulty,highScores);
     gameBoard = new Board(height,width);
 
     $('#wrapper').empty();
@@ -61,6 +58,10 @@ $(document).ready(function() {
 
   function handleClick() {
     if (game.state === 'In Play') {
+      if (!timerStarted) {
+        timerStarted = true;
+        startTime = Date.now();
+      }
       var position = getPosition(event),
           x = position[0],
           y = position[1],
@@ -113,21 +114,28 @@ $(document).ready(function() {
   }
 
   function gameOver() {
+    var yourTime = getTime();
+    $('#game-over-image')[0].classList = '';
     $('#bomb-span').css('color','#4B964C');
     if (game.state === 'You Lost.') {
       gameBoard.bombs.forEach(function(bomb,key) {
         displayCoordinate = '.row_' + bomb[0] + '.col_' + bomb[1];
         $(displayCoordinate)[0].classList.add('bomb');
       });
-      $('#game-over-modal').modal('toggle');
       $('#game-over-image')[0].classList.add('link-lost');
+      $('#game-state').html('You lost.');
+      $('#game-over-modal').modal('toggle');
     } else {
       gameBoard.flags.forEach(function(flag,key) {
         displayCoordinate = '.row_' + flag[0] + '.col_' + flag[1];
         $(displayCoordinate).css('background-color', '#19BC05');
       });
-      $('#game-over-modal').modal('toggle');
+      game.highScores.push(yourTime);
+      game.highScores.sort();
+      displayHighScores();
       $('#game-over-image')[0].classList.add('link-won');
+      $('#game-state').html('You won in ' + yourTime + ' seconds!');
+      $('#game-over-modal').modal('toggle');
     }
     $('#reset')[0].classList.remove('link');
     $('#reset')[0].classList.add('potion');
@@ -135,12 +143,32 @@ $(document).ready(function() {
     $('#mobile-reset')[0].classList.add('potion');
   }
 
+  function getTime() {
+    endTime = Date.now();
+    timerStarted = false;
+    return (endTime - startTime)/1000;
+  }
+
+  function displayHighScores() {
+    var score;
+    for(var i=0;i<10;i++) {
+      if (game.highScores[i] === undefined) {
+        score = '';
+      } else {
+        score = game.highScores[i] + ' s';
+      }
+      var element = '<li>' + score +'</li>';
+      $('#high-scores').append(element);
+    }
+  }
+
   // Game Constructor
-  function Game() {
+  function Game(height,width,difficulty,highScores) {
     this.state = 'In Play';
-    this.height = 0;
-    this.width = 0;
-    this.difficulty = 0;
+    this.height = height;
+    this.width = width;
+    this.difficulty = difficulty;
+    this.highScores = highScores
   }
 
   // Creates HTML board on page
@@ -315,8 +343,11 @@ $(document).ready(function() {
   };
 
   // Start Game
-  var game;
-  var numbers = {
+  var game,
+      timerStarted = false,
+      startTime,
+      endTime,
+      numbers = {
     1: 'one',
     2: 'two',
     3: 'three',
@@ -325,13 +356,13 @@ $(document).ready(function() {
     6: 'six',
     7: 'seven'
   }
-  startGame('',12,12,0);
+  startGame('',12,12,0,[]);
 
   $('#reset').on('click',function() {
-    startGame('', game.height, game.width, game.difficulty);
+    startGame('', game.height, game.width, game.difficulty,game.highScores);
   });
   $('#mobile-reset').on('click',function() {
-    startGame('', game.height, game.width, game.difficulty);
+    startGame('', game.height, game.width, game.difficulty,game.highScores);
   });
   $('#create').on('click',createGame);
 });
