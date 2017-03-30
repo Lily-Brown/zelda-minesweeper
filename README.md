@@ -47,14 +47,15 @@ MineSweeper Mobile
 
 <img src='http://i.imgur.com/Y16j4bj.png' width=250px>
 
-
 ## Features
 
-- Allow User to Customize Game Board Size and Difficulty
+- User Can Specify Size and Difficulty to create Custom Game Boards
+- Time Played recorded, saved on win and added to list of High Scores
 
 ## Future Work
 
 - Have High Score Data Persist
+- Implement Cleaner UI
 - Refactor Code: Clean Up, More Reuse, Implement Better Front End Framework(?)
-- Better Responsiveness for different Desktop Views
+- Better Responsiveness for various Desktop Views
 - Different Themes for Difficulty Levels (Easy - Meadow, Intermediate - Dungeon, Hard - Boss Fight)

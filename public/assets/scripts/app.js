@@ -1,8 +1,9 @@
 console.log('Assets connected.');
 
 $(document).ready(function() {
-  var isMobile = window.matchMedia("only screen and (max-width: 760px)");
+  var isMobile = window.matchMedia('only screen and (max-width: 760px)');
 
+  // Creates new Game and GameBoard, cleans up old board, reset statuses/listeners
   function startGame(event,height,width,difficulty,highScores) {
     game = new Game(height,width,difficulty,highScores);
     gameBoard = new Board(height,width);
@@ -32,6 +33,13 @@ $(document).ready(function() {
     addEventListeners();
   }
 
+  // Adds Event Listeners
+  function addEventListeners() {
+    $('.box').on('click',handleClick);
+    $('.box').on('contextmenu',handleRightClick);
+  }
+
+  // Starts are game with Custom height/width/difficulty from form
   function createGame(event) {
     event.preventDefault();
     var height = parseInt($('#height').val());
@@ -47,40 +55,52 @@ $(document).ready(function() {
       alert('Difficulty must be an integer between 0 and 2.');
     } else {
       $('#custom-modal').modal('hide');
-      startGame(event,height,width,difficulty);
+      startGame(event,height,width,difficulty,game.highScores);
     }
   }
 
-  function addEventListeners() {
-    $('.box').on('click',handleClick);
-    $('.box').on('contextmenu',handleRightClick);
-  }
-
+  // Handle Left-Click when Game is 'In Play'
   function handleClick() {
     if (game.state === 'In Play') {
+
+      // Start timer for High Score
       if (!timerStarted) {
         timerStarted = true;
         startTime = Date.now();
       }
+
       var position = getPosition(event),
           x = position[0],
           y = position[1],
-          coordinate = gameBoard.board[x][y];
-
-      var displayCoordinate = '.row_' + x + '.col_' + y;
+          coordinate = gameBoard.board[x][y],
+          displayCoordinate = '.row_' + x + '.col_' + y;
+      // If bomb ==> 'You Lost.' && Return without Revel recursion
       if (coordinate === 'bomb') {
         $(displayCoordinate).css('background-color', 'red');
         game.state = 'You Lost.';
-        gameOver();
+        game.gameOver();
         return;
+      // If Marker Number != Flagged-Near ==> Return without Revel recursion
       } else if (parseInt(coordinate) != NaN && coordinate != null) {
-        something = coordinate.toString().replace('revealed-','');
-        $(displayCoordinate)[0].classList.add(numbers[something]);
+        value = coordinate.toString().replace('revealed-','');
+        $(displayCoordinate)[0].classList.add(numbers[value]);
+        if (!gameBoard.revealed.includes(x+':'+y)) {
+          gameBoard.revealed.push(x+':'+y);
+        }
+        gameBoard.checkWin();
+        if (gameBoard.findNear(x,y,'flag') != value ) {
+          return;
+        }
+      }
+      if (!gameBoard.revealed.includes(x+':'+y)) {
+        gameBoard.revealed.push(x+':'+y);
       }
       gameBoard.reveal(x,y);
+      gameBoard.checkWin();
     }
   }
 
+  // Handle Right-Click when Game is 'In Play'
   function handleRightClick() {
     event.preventDefault();
     if (game.state === 'In Play') {
@@ -89,6 +109,7 @@ $(document).ready(function() {
         y = position[1],
         coordinate = gameBoard.board[x][y],
         displayCoordinate = '.row_' + x + '.col_' + y;
+      // Flag if Not Flagged || Un-Flag if Flagged, Adjust Bomb count
       if (coordinate != null && !coordinate.includes('revealed')) {
         if (coordinate.includes('flag-')) {
           gameBoard.board[x][y] = coordinate.replace("flag-",'');
@@ -106,6 +127,7 @@ $(document).ready(function() {
     gameBoard.checkWin();
   }
 
+  // Get row,col position of click event
   function getPosition(event) {
     var toParse = event.target.className;
     var row = toParse.substring((toParse.indexOf('row_'))+4,(toParse.indexOf('col')));
@@ -113,43 +135,21 @@ $(document).ready(function() {
     return [parseInt(row), parseInt(col)];
   }
 
-  function gameOver() {
-    var yourTime = getTime();
-    $('#game-over-image')[0].classList = '';
-    $('#bomb-span').css('color','#4B964C');
-    if (game.state === 'You Lost.') {
-      gameBoard.bombs.forEach(function(bomb,key) {
-        displayCoordinate = '.row_' + bomb[0] + '.col_' + bomb[1];
-        $(displayCoordinate)[0].classList.add('bomb');
-      });
-      $('#game-over-image')[0].classList.add('link-lost');
-      $('#game-state').html('You lost.');
-      $('#game-over-modal').modal('toggle');
-    } else {
-      gameBoard.flags.forEach(function(flag,key) {
-        displayCoordinate = '.row_' + flag[0] + '.col_' + flag[1];
-        $(displayCoordinate).css('background-color', '#19BC05');
-      });
-      game.highScores.push(yourTime);
-      game.highScores.sort();
-      displayHighScores();
-      $('#game-over-image')[0].classList.add('link-won');
-      $('#game-state').html('You won in ' + yourTime + ' seconds!');
-      $('#game-over-modal').modal('toggle');
-    }
-    $('#reset')[0].classList.remove('link');
-    $('#reset')[0].classList.add('potion');
-    $('#mobile-reset')[0].classList.remove('link');
-    $('#mobile-reset')[0].classList.add('potion');
+  // Helper Function to Sort High Scores as Integers
+  function sortNumber(a,b) {
+    return a - b;
   }
 
+  // Get Time User took to Complete Game
   function getTime() {
     endTime = Date.now();
     timerStarted = false;
     return (endTime - startTime)/1000;
   }
 
+  // Display High Scores on Modal
   function displayHighScores() {
+    $('#high-scores').empty();
     var score;
     for(var i=0;i<10;i++) {
       if (game.highScores[i] === undefined) {
@@ -162,25 +162,26 @@ $(document).ready(function() {
     }
   }
 
-  // Game Constructor
+  // GAME CONSTRUCTOR
   function Game(height,width,difficulty,highScores) {
     this.state = 'In Play';
     this.height = height;
     this.width = width;
     this.difficulty = difficulty;
-    this.highScores = highScores
+    this.highScores = highScores;
   }
 
-  // Creates HTML board on page
+  // GAME: Creates HTML board on page
   Game.prototype.initalizeDisplayBoard = function(height,width) {
-    console.log("hi");
     for(var i=0;i<height;i++) {
       var rowId="starter"+i;
       var element="<div class='headbox "+rowId+" row_"+(i)+"''></div>";
       if (isMobile.matches) {
         $('#mobile-wrapper').append(element);
+        $('#mobile-wrapper').width(width*20);
       } else {
         $('#wrapper').append(element);
+        $('#wrapper').width(width*20);
       }
       for(var j=0;j<width;j++) {
         var rowElement="<div class='box border row_"+(i)+" col_"+(j)+"'></div>";
@@ -188,21 +189,56 @@ $(document).ready(function() {
         $(newRowId).append(rowElement);
       }
     }
-    $('#wrapper').width(width*20);
-    $('#mobile-wrapper').width(width*20);
     console.log('Board created.');
   };
 
-  // Board Constructor
+  // GAME: Handle Game Over
+  Game.prototype.gameOver = function() {
+    var yourTime = getTime();
+    // Clears/resets image and bomb-span
+    $('#game-over-image')[0].classList = '';
+    $('#bomb-span').css('color','#4B964C');
+    // If 'You Lost' ==> Display bombs and Toggle Modal
+    if (game.state === 'You Lost.') {
+      gameBoard.bombs.forEach(function(bomb,key) {
+        displayCoordinate = '.row_' + bomb[0] + '.col_' + bomb[1];
+        $(displayCoordinate)[0].classList.add('bomb');
+      });
+      $('#game-over-image')[0].classList.add('link-lost');
+      $('#game-state').html('You lost.');
+      $('#game-over-modal').modal('toggle');
+    // If 'You Win' ==> Display flags, add Time to High Scores, and Toggle Modal
+    } else {
+      gameBoard.bombs.forEach(function(bomb,key) {
+        displayCoordinate = '.row_' + bomb[0] + '.col_' + bomb[1];
+        $(displayCoordinate).css('background-color', '#19BC05');
+        $(displayCoordinate)[0].classList.add('flag');
+      });
+      game.highScores.push(yourTime);
+      game.highScores.sort(sortNumber);
+      displayHighScores();
+      $('#game-over-image')[0].classList.add('link-won');
+      $('#game-state').html('You won in ' + yourTime + ' seconds!');
+      $('#game-over-modal').modal('toggle');
+    }
+    // Displays 'Potion' in reset button
+    $('#reset')[0].classList.remove('link');
+    $('#reset')[0].classList.add('potion');
+    $('#mobile-reset')[0].classList.remove('link');
+    $('#mobile-reset')[0].classList.add('potion');
+  }
+
+  // BOARD CONSTRUCTOR
   function Board(height=12,width=12) {
     this.board = [];
     this.bombs = [];
     this.flags = [];
+    this.revealed = [];
     this.height = height;
     this.width = width;
     this.size = height * width;
 
-    // Initalizing board
+    // Initalize board with all values null
     for(var i=0;i<height;i++) {
       this.board[i]=[];
       for(var j=0;j<width;j++) {
@@ -211,7 +247,7 @@ $(document).ready(function() {
     }
   }
 
-  // Places Bombs on board
+  // BOARD: Places Bombs randomly on board
   Board.prototype.placeBombs = function(difficulty=0) {
     var bombs,
         height,
@@ -237,66 +273,74 @@ $(document).ready(function() {
     console.log('Bombs placed.');
   };
 
-  // Places Markers on Board
+  // BOARD: Places Markers on Board based on bombsNear
   Board.prototype.placeMarkers = function() {
     for(var i=0;i<this.height;i++) {
       for(var j=0;j<this.width;j++) {
-        var bombsNear = 0;
-        // If not the first row
-        if (this.board[i][j] != 'bomb') {
-          if (i > 0) {
-            // If not the first column
-            if (j > 0 && this.board[i-1][j-1] === 'bomb') {
-              bombsNear ++;
-            }
-            if (this.board[i-1][j] === 'bomb') {
-              bombsNear ++;  
-            }
-            // If not the last column
-            if (j < this.width-1) {
-              if (this.board[i-1][j+1] === 'bomb') {
-                bombsNear ++;
-              }
-            }
-          }
-          // If not the last row
-          if (i < this.height-1) {
-            // If not the first column
-            if (j > 0 && this.board[i+1][j-1] === 'bomb') {
-              bombsNear ++;
-            }
-            if (this.board[i+1][j] === 'bomb') {
-              bombsNear ++;
-            }
-            // If not the last column
-            if (j < this.width-1) {
-              if (this.board[i+1][j+1] === 'bomb') {
-               bombsNear ++;
-              }
-            }
-          }
-          // If not the first column
-          if (j > 0) {
-            if (this.board[i][j-1] === 'bomb') {
-              bombsNear ++;
-            }
-          }
-          // If not the last column
-          if (j < this.width-1) {
-            if (this.board[i][j+1] === 'bomb') {
-              bombsNear ++;
-            }
-          }
-          if (bombsNear > 0) {
-            this.board[i][j] = bombsNear.toString();
-            var displayCoordinate = '.row_'+ i + '.col_' + j;
-          }
+        var bombsNear = this.findNear(i,j,'bomb');
+        if (bombsNear > 0) {
+          this.board[i][j] = bombsNear.toString();
+          var displayCoordinate = '.row_'+ i + '.col_' + j;
         }
       }
     }
     console.log('Markers placed.');
   };
 
+  // BOARD: Returns the number of 'elements' near given location i,j
+  Board.prototype.findNear = function(i,j,element) {
+    var foundNear = 0;
+    // If not the first row
+    if (this.board[i][j] != element) {
+      if (i > 0) {
+        // If not the first column
+        if (j > 0 && String(this.board[i-1][j-1]).includes(element)) {
+          foundNear++;
+        }
+        if (String(this.board[i-1][j]).includes(element)) {
+          foundNear++;  
+        }
+        // If not the last column
+        if (j < this.width-1) {
+          if (String(this.board[i-1][j+1]).includes(element)) {
+            foundNear++;
+          }
+        }
+      }
+      // If not the last row
+      if (i < this.height-1) {
+        // If not the first column
+        if (j > 0 && String(this.board[i+1][j-1]).includes(element)) {
+          foundNear++;
+        }
+        if (String(this.board[i+1][j]).includes(element)) {
+          foundNear++;
+        }
+        // If not the last column
+        if (j < this.width-1) {
+          if (String(this.board[i+1][j+1]).includes(element)) {
+           foundNear++;
+          }
+        }
+      }
+      // If not the first column
+      if (j > 0) {
+        if (String(this.board[i][j-1]).includes(element)) {
+          foundNear++;
+        }
+      }
+      // If not the last column
+      if (j < this.width-1) {
+        if (String(this.board[i][j+1]).includes(element)) {
+          foundNear++;
+        }
+      }
+    }
+    return foundNear;
+  }
+
+  // BOARD: Reveal logic from
+  // http://kitedeveloper.blogspot.com/2013/04/minesweeper-using-recursion-to-reveal.html
   Board.prototype.reveal = function(x, y) {
     x = parseInt(x);
     y = parseInt(y);
@@ -311,6 +355,8 @@ $(document).ready(function() {
     this.revealNextCell(x + 1, y + 1);
   }
 
+  // BOARD: RevealNextCell from
+  // http://kitedeveloper.blogspot.com/2013/04/minesweeper-using-recursion-to-reveal.html
   Board.prototype.revealNextCell = function(x, y){
     var displayCoordinate = '.row_' + x + '.col_' + y;
 
@@ -322,27 +368,42 @@ $(document).ready(function() {
     if (coordinate === null) {
       this.board[x][y] = 'revealed';
       $(displayCoordinate)[0].classList.remove('border');
+      if (!gameBoard.revealed.includes(x+':'+y)) {
+        gameBoard.revealed.push(x+':'+y);
+      }
       this.reveal(x,y);
     } else { 
       if (coordinate.includes('flag')) return;
       var state = this.board[x][y].replace('revealed-','');
       this.board[x][y] = 'revealed-'+state;
+      if (!gameBoard.revealed.includes(x+':'+y)) {
+        gameBoard.revealed.push(x+':'+y);
+      }
       $(displayCoordinate)[0].classList.add(numbers[state]);
     }
   }
   
-  // Checks for a Win State
+  // BOARD: Checks for a Win State
   Board.prototype.checkWin = function() {
-    // If player Flags are the same as Bombs
+    // If number of Flags are the same as Bombs
     if (this.flags.length === this.bombs.length) {
       if(this.flags.sort().join(',') === this.bombs.sort().join(',')){
         game.state = 'You win.';
-        gameOver();
+        game.gameOver();
       }
+    }
+    // If number of Revealed cells equal (Size of Board - Number of Bombs)
+    if (gameBoard.revealed.length === (gameBoard.size-gameBoard.bombs.length)) {
+      game.state = 'You win.';
+      game.gameOver();
     }
   };
 
-  // Start Game
+  /*
+  ----------------
+  When document.ready, start game
+  ----------------
+  */
   var game,
       timerStarted = false,
       startTime,
@@ -358,6 +419,7 @@ $(document).ready(function() {
   }
   startGame('',12,12,0,[]);
 
+  // Add EventListeners for reset and create buttons
   $('#reset').on('click',function() {
     startGame('', game.height, game.width, game.difficulty,game.highScores);
   });
@@ -365,4 +427,5 @@ $(document).ready(function() {
     startGame('', game.height, game.width, game.difficulty,game.highScores);
   });
   $('#create').on('click',createGame);
+
 });
