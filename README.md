@@ -1,4 +1,4 @@
-# TacPoint Take-Home
+# Zelda Minesweeper
 
 ## Synopsis
 
