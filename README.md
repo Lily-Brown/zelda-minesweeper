@@ -20,7 +20,7 @@ Extra Credit
 
 1 - Fork and clone this repository.
 
-2 - CD into the project directory: ```> cd lbrown```
+2 - CD into the project directory: ```> cd zelda-minesweeper```
 
 3 - Install Node Packages: ```> npm install```
 
