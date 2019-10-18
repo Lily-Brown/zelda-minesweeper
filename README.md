@@ -16,6 +16,12 @@ Extra Credit
 - Implement a backend feature and create a leader board based on time.
 
 
+## Prererequisites
+
+Install nodemon:
+
+```npm install -g nodemon```
+
 ## Installation
 
 1 - Fork and clone this repository.
