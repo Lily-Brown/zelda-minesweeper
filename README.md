@@ -16,7 +16,7 @@ Extra Credit
 - Implement a backend feature and create a leader board based on time.
 
 
-## Prererequisites
+## Prerequisites
 
 Install nodemon:
 
